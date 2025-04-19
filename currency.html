@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Currency Converter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .converter-container {
+            max-width: 400px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .input-field {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #333;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Currency Converter</h1>
+    <div class="converter-container">
+        <label for="amount">Amount in USD:</label>
+        <input type="number" id="amount" class="input-field" placeholder="Enter amount in USD" required>
+
+        <label for="currency">Convert to:</label>
+        <select id="currency" class="input-field">
+            <option value="EUR">Euro (EUR)</option>
+            <option value="GBP">British Pound (GBP)</option>
+            <option value="INR">Indian Rupee (INR)</option>
+            <option value="JPY">Japanese Yen (JPY)</option>
+            <option value="AUD">Australian Dollar (AUD)</option>
+            <option value="RWF">RWANDAN FRANCS (RWF)</option>
+        </select>
+
+        <button class="button" onclick="convertCurrency()">Convert</button>
+
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        let exchangeRates = {};
+
+        // Fetch exchange rates from the API
+        fetch('https://api.exchangerate-api.com/v4/latest/USD')
+            .then(response => response.json())
+            .then(data => {
+                exchangeRates = data.rates;
+            })
+            .catch(error => {
+                console.error("Error fetching exchange rates:", error);
+                alert("Failed to load exchange rates.");
+            });
+
+        // Convert currency function
+        function convertCurrency() {
+            const amount = parseFloat(document.getElementById("amount").value);
+            const currency = document.getElementById("currency").value;
+            
+            if (isNaN(amount) || amount <= 0) {
+                alert("Please enter a valid amount.");
+                return;
+            }
+
+            // Check if the currency is available in the exchange rates
+            if (exchangeRates[currency]) {
+                const convertedAmount = (amount * exchangeRates[currency]).toFixed(2);
+                document.getElementById("result").innerHTML = `${amount} USD = ${convertedAmount} ${currency}`;
+            } else {
+                document.getElementById("result").innerHTML = "Invalid currency selected.";
+            }
+        }
+    </script>
+
+</body>
+</html>
